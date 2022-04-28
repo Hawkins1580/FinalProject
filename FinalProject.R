@@ -16,13 +16,6 @@ library(ggrepel)
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
 
-# Reading in Electricity Generation by Year
-Sources_2001 <- read.csv("/cloud/project/2001_DATA.csv")
-Sources_2006 <- read.csv("/cloud/project/2006_DATA.csv")
-Sources_2011 <- read.csv("/cloud/project/2011_DATA.csv")
-Sources_2016 <- read.csv("/cloud/project/2016_DATA.csv")
-Sources_2021 <- read.csv("/cloud/project/2021_DATA.csv")
-
 
 # Renaming column
 colnames(US_Sources)
@@ -35,8 +28,6 @@ colnames(US_Sources)[6] <- "Nuclear"
 
 # Melting all sources into one column 
 DataPlot_USEnergy <- melt(US_Sources, id="Year") # sorting each energy sector by year
- # Renaming columns 
-colnames(DataPlot_USEnergy)
 
 ElectrictyMix_GRAPH <- ggplot(data = DataPlot_USEnergy, # data for plot
                 aes(x = Year,
@@ -69,6 +60,126 @@ ElectrictyMix_GRAPH +
 
 
 
+# Reading in Electricity Generation by Year
+Sources_2001 <- read.csv("/cloud/project/2001_DATA.csv")
+Sources_2006 <- read.csv("/cloud/project/2006_DATA.csv")
+Sources_2011 <- read.csv("/cloud/project/2011_DATA.csv")
+Sources_2016 <- read.csv("/cloud/project/2016_DATA.csv")
+Sources_2021 <- read.csv("/cloud/project/2021_DATA.csv")
+
+
+# Filtering through the variables I want w/AER Codes
+  # Nuclear = NUC
+  # Wind = WND
+  # Hydro = HPS & HYC
+  # Other & Biomass = ORW, OTH, WWW, GEO
+
+# 2001 - Filtering for fuel codes that I want
+Filter_2001 <- Sources_2001 %>% # data frame with pipe
+  group_by(State) %>% # group data frame by state
+  filter(AER.Fuel.Type.Code == "NUC" |
+           AER.Fuel.Type.Code == "WND" |
+           AER.Fuel.Type.Code == "HPS" |
+           AER.Fuel.Type.Code == "HYC" |
+           AER.Fuel.Type.Code == "ORW" |
+           AER.Fuel.Type.Code == "OTH" |
+           AER.Fuel.Type.Code == "WWW" |
+           AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+Filter_2001$Net.Generation.MWh <- as.numeric(as.character(Filter_2001$Net.Generation.MWh))
+
+
+# 2006 - Filtering for fuel codes that I want
+Filter_2006 <- Sources_2006 %>% # data frame with pipe
+  group_by(State) %>% # group data frame by state
+  filter(AER.Fuel.Type.Code == "NUC" |
+           AER.Fuel.Type.Code == "WND" |
+           AER.Fuel.Type.Code == "HPS" |
+           AER.Fuel.Type.Code == "HYC" |
+           AER.Fuel.Type.Code == "ORW" |
+           AER.Fuel.Type.Code == "OTH" |
+           AER.Fuel.Type.Code == "WWW" |
+           AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+Filter_2006$Net.Generation.MWh <- as.numeric(as.character(Filter_2006$Net.Generation.MWh))
+
+
+
+# 2011 - Filtering for fuel codes that I want
+Filter_2011 <- Sources_2011 %>% # data frame with pipe
+  group_by(State) %>% # group data frame by state
+  filter(AER.Fuel.Type.Code == "NUC" |
+           AER.Fuel.Type.Code == "WND" |
+           AER.Fuel.Type.Code == "HPS" |
+           AER.Fuel.Type.Code == "HYC" |
+           AER.Fuel.Type.Code == "ORW" |
+           AER.Fuel.Type.Code == "OTH" |
+           AER.Fuel.Type.Code == "WWW" |
+           AER.Fuel.Type.Code == "GEO") # filtering for fuel codes 
+Filter_2011$Net.Generation.MWh <- as.numeric(Filter_2011$Net.Generation.MWh)
+
+
+
+# 2016 - Filtering for fuel codes that I want
+Filter_2016 <- Sources_2016 %>% # data frame with pipe
+  group_by(State) %>% # group data frame by state
+  filter(AER.Fuel.Type.Code == "NUC" |
+           AER.Fuel.Type.Code == "WND" |
+           AER.Fuel.Type.Code == "HPS" |
+           AER.Fuel.Type.Code == "HYC" |
+           AER.Fuel.Type.Code == "ORW" |
+           AER.Fuel.Type.Code == "OTH" |
+           AER.Fuel.Type.Code == "WWW" |
+           AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+Filter_2016$Net.Generation.MWh <- as.numeric(as.character(Filter_2016$Net.Generation.MWh))
+
+
+
+# 2021 - Filtering for fuel codes that I want
+Filter_2021 <- Sources_2021 %>% # data frame with pipe
+  group_by(State) %>% # group data frame by state
+  filter(AER.Fuel.Type.Code == "NUC" |
+           AER.Fuel.Type.Code == "WND" |
+           AER.Fuel.Type.Code == "HPS" |
+           AER.Fuel.Type.Code == "HYC" |
+           AER.Fuel.Type.Code == "ORW" |
+           AER.Fuel.Type.Code == "OTH" |
+           AER.Fuel.Type.Code == "WWW" |
+           AER.Fuel.Type.Code == "GEO") # filtering for fuel codes 
+Filter_2021$Net.Generation.MWh <- as.numeric(as.character(Filter_2021$Net.Generation.MWh))
+
+
+##### 2001 - Summing Net Generation by State and Fuel Code 
+NetGeneration_2001 <- Filter_2001 %>% 
+  group_by(Year, State, AER.Fuel.Type.Code) %>% 
+  summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+
+##### 2006 - Summing Net Generation by State and Fuel Code 
+NetGeneration_2006 <- Filter_2006 %>% 
+  group_by(Year, State, AER.Fuel.Type.Code) %>% 
+  summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+
+##### 2011 - Summing Net Generation by State and Fuel Code 
+NetGeneration_2011 <- Filter_2011 %>% 
+  group_by(Year, State, AER.Fuel.Type.Code) %>% 
+  summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+
+##### 2016 - Summing Net Generation by State and Fuel Code 
+NetGeneration_2016 <- Filter_2016 %>% 
+  group_by(Year, State, AER.Fuel.Type.Code) %>% 
+  summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+
+##### 2021 - Summing Net Generation by State and Fuel Code 
+NetGeneration_2021 <- Filter_2021 %>% 
+  group_by(Year, State, AER.Fuel.Type.Code) %>% 
+  summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+
+
+
+
+
+
+
+
+# Plotting US Map
 plot_usmap(regions = "states") + 
   labs(title = "Map of United States",
        subtitle = "Renewable Electricity Generation Over Time") + 

@@ -1,6 +1,4 @@
-YEAR,Plant State,"AER
-Fuel Type Code","Net Generation
-(Megawatthours)"
+Year,State,AER Fuel Type Code,Net Generation MWh
 2016,AK,RFO,0
 2016,AK,HYC,"25,644"
 2016,AK,HYC,"4,589"
