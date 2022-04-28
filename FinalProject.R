@@ -16,6 +16,14 @@ library(ggrepel)
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
 
+# Reading in Electricity Generation by Year
+Sources_2001 <- read.csv("/cloud/project/2001_DATA.csv")
+Sources_2006 <- read.csv("/cloud/project/2006_DATA.csv")
+Sources_2011 <- read.csv("/cloud/project/2011_DATA.csv")
+Sources_2016 <- read.csv("/cloud/project/2016_DATA.csv")
+Sources_2021 <- read.csv("/cloud/project/2021_DATA.csv")
+
+
 # Renaming column
 colnames(US_Sources)
 colnames(US_Sources)[1] <- "Year"
