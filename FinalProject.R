@@ -2,8 +2,11 @@
 
 # Installing packages
 # Comment oackages out after uploading them
-install.packages(c("fiftystater", "tidyverse", "dplyr", "lubridate", "usmap", "ggplot2", "reshape2", "scales", "ggrepel"))
+install.packages(c("tidyverse", "dplyr", "lubridate", "usmap", "ggplot2", "reshape2", "scales", "ggrepel"))
 install.packages("writexl")
+install.packages("maps")
+install.packages("mapdata")
+
 
 # Bringing packages into library
 library(usmap) 
@@ -13,9 +16,10 @@ library(lubridate)
 library(reshape2)
 library(scales)
 library(ggrepel)
-library(fiftystater)
 library(tidyverse)
 library(writexl)
+library(maps)
+library(mapdata)
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
@@ -204,6 +208,14 @@ FINAL_2021 <- read.csv("/cloud/project/2021.csv")
 
 
 
+
+usa <- map_data('usa')
+ggplot(data=FINAL_2001, aes(x=Long, y=Lat, group=AER.Fuel.Type.Code)) + 
+  geom_polygon(fill='lightblue') + 
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + 
+  ggtitle('U.S. Map') + 
+  coord_fixed(1.3)
 
 
 # Plotting US Map
