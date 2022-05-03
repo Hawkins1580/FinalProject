@@ -2,7 +2,8 @@
 
 # Installing packages
 # Comment oackages out after uploading them
-install.packages(c("dplyr", "lubridate", "usmap", "ggplot2", "reshape2", "scales", "ggrepel"))
+install.packages(c("fiftystater", "tidyverse", "dplyr", "lubridate", "usmap", "ggplot2", "reshape2", "scales", "ggrepel"))
+install.packages("writexl")
 
 # Bringing packages into library
 library(usmap) 
@@ -12,6 +13,9 @@ library(lubridate)
 library(reshape2)
 library(scales)
 library(ggrepel)
+library(fiftystater)
+library(tidyverse)
+library(writexl)
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
@@ -85,6 +89,7 @@ Filter_2001 <- Sources_2001 %>% # data frame with pipe
            AER.Fuel.Type.Code == "OTH" |
            AER.Fuel.Type.Code == "WWW" |
            AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+# Converting column to numeric
 Filter_2001$Net.Generation.MWh <- as.numeric(as.character(Filter_2001$Net.Generation.MWh))
 
 
@@ -99,6 +104,7 @@ Filter_2006 <- Sources_2006 %>% # data frame with pipe
            AER.Fuel.Type.Code == "OTH" |
            AER.Fuel.Type.Code == "WWW" |
            AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+# Converting column to numeric
 Filter_2006$Net.Generation.MWh <- as.numeric(as.character(Filter_2006$Net.Generation.MWh))
 
 
@@ -114,6 +120,7 @@ Filter_2011 <- Sources_2011 %>% # data frame with pipe
            AER.Fuel.Type.Code == "OTH" |
            AER.Fuel.Type.Code == "WWW" |
            AER.Fuel.Type.Code == "GEO") # filtering for fuel codes 
+# Converting column to numeric
 Filter_2011$Net.Generation.MWh <- as.numeric(Filter_2011$Net.Generation.MWh)
 
 
@@ -129,6 +136,7 @@ Filter_2016 <- Sources_2016 %>% # data frame with pipe
            AER.Fuel.Type.Code == "OTH" |
            AER.Fuel.Type.Code == "WWW" |
            AER.Fuel.Type.Code == "GEO") # filtering for fuel codes
+# Converting column to numeric
 Filter_2016$Net.Generation.MWh <- as.numeric(as.character(Filter_2016$Net.Generation.MWh))
 
 
@@ -144,6 +152,7 @@ Filter_2021 <- Sources_2021 %>% # data frame with pipe
            AER.Fuel.Type.Code == "OTH" |
            AER.Fuel.Type.Code == "WWW" |
            AER.Fuel.Type.Code == "GEO") # filtering for fuel codes 
+# Converting column to numeric
 Filter_2021$Net.Generation.MWh <- as.numeric(as.character(Filter_2021$Net.Generation.MWh))
 
 
@@ -151,36 +160,54 @@ Filter_2021$Net.Generation.MWh <- as.numeric(as.character(Filter_2021$Net.Genera
 NetGeneration_2001 <- Filter_2001 %>% 
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+# Exporting to excel so I can add lat / long coordinates
+write_xlsx(NetGeneration_2001, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2001.xlsx")
+
 
 ##### 2006 - Summing Net Generation by State and Fuel Code 
 NetGeneration_2006 <- Filter_2006 %>% 
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+# Exporting to excel so I can add lat / long coordinates
+write_xlsx(NetGeneration_2006, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2006.xlsx")
+
 
 ##### 2011 - Summing Net Generation by State and Fuel Code 
 NetGeneration_2011 <- Filter_2011 %>% 
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+# Exporting to excel so I can add lat / long coordinates
+write_xlsx(NetGeneration_2011, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2011.xlsx")
+
 
 ##### 2016 - Summing Net Generation by State and Fuel Code 
 NetGeneration_2016 <- Filter_2016 %>% 
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+# Exporting to excel so I can add lat / long coordinates
+write_xlsx(NetGeneration_2016, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2016.xlsx")
 
 ##### 2021 - Summing Net Generation by State and Fuel Code 
 NetGeneration_2021 <- Filter_2021 %>% 
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
+# Exporting to excel so I can add lat / long coordinates
+write_xlsx(NetGeneration_2021, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2021.xlsx")
 
 
-
+# Reading in Clean Data with Lat / Long Coordinates
+FINAL_2001 <- read.csv("/cloud/project/2001.csv")
+FINAL_2006 <- read.csv("/cloud/project/2006.csv")
+FINAL_2011 <- read.csv("/cloud/project/2011.csv")
+FINAL_2016 <- read.csv("/cloud/project/2016.csv")
+FINAL_2021 <- read.csv("/cloud/project/2021.csv")
 
 
 
 
 
 # Plotting US Map
-plot_usmap(regions = "states") + 
+plot_usmap(region="state", boundary=FALSE, col="gray", add=TRUE) + 
   labs(title = "Map of United States",
        subtitle = "Renewable Electricity Generation Over Time") + 
   theme(panel.background=element_blank())
