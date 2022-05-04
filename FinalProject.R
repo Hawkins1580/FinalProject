@@ -6,6 +6,12 @@ install.packages(c("tidyverse", "dplyr", "lubridate", "usmap", "ggplot2", "resha
 install.packages("writexl")
 install.packages("maps")
 install.packages("mapdata")
+install.packages("sf")
+
+# Canit install in this version of R????
+install.packages("urbnmapr")
+install.packages("fiftystater")
+library(urbnmapr)
 
 
 # Bringing packages into library
@@ -20,6 +26,7 @@ library(tidyverse)
 library(writexl)
 library(maps)
 library(mapdata)
+library(sf)
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
@@ -206,23 +213,59 @@ FINAL_2011 <- read.csv("/cloud/project/2011.csv")
 FINAL_2016 <- read.csv("/cloud/project/2016.csv")
 FINAL_2021 <- read.csv("/cloud/project/2021.csv")
 
+FINAL_2021 %>% glimpse()
+
+
+# Easy US Map
+plot_usmap() +
+  geom_point(data = FINAL_2021,
+             aes(x = Long, y = Lat, size = Net.Generation.MWh),
+             color = "red", alpha = 0.25)+
+  labs(title = "Electricity Generation",
+       subtitle = "by Renewable Energy Source",
+       size = "MWh") +
+  theme(legend.position = "right")
 
 
 
-usa <- map_data('usa')
-ggplot(data=FINAL_2001, aes(x=Long, y=Lat, group=AER.Fuel.Type.Code)) + 
-  geom_polygon(fill='lightblue') + 
-  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + 
-  ggtitle('U.S. Map') + 
-  coord_fixed(1.3)
+
+# MWh but no map border
+ggplot() + geom_point(data=FINAL_2021, aes(x=Long, y=Lat, size = Net.Generation.MWh)) +
+  scale_size(name="", range = c(1, 8)) +
+  guides(size=guide_legend("Renewable Generation")) +
+  theme_void()
 
 
-# Plotting US Map
-plot_usmap(region="state", boundary=FALSE, col="gray", add=TRUE) + 
-  labs(title = "Map of United States",
-       subtitle = "Renewable Electricity Generation Over Time") + 
-  theme(panel.background=element_blank())
+
+
+
+
+states <- st_as_sf(maps::map(database = "state",plot=F,fill=T)) 
+
+states %>%
+  ggplot()+
+  geom_sf()
+
+
+map_plot_2021 <- ggplot()+
+  geom_sf(data=states,
+          fill="white")+
+  geom_point(data=FINAL_2021,
+             mapping=aes(x=Long,
+                         y=Lat,
+                         group=AER.Fuel.Type.Code,
+                         size=Net.Generation.MWh),
+             fill="red",
+             alpha=0.3,
+             shape=21)+
+  scale_size_continuous(breaks = c(3000000,
+                                   6000000,
+                                   9000000,
+                                   12000000,
+                                   15000000),
+                        name="Net Generation (MWh)",
+                        range = c(.75, 8))
+map_plot_2021 
 
 
 
