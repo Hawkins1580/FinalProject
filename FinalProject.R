@@ -8,6 +8,8 @@ install.packages("maps")
 install.packages("mapdata")
 install.packages("sf")
 install.packages("tmap")
+install.packages("classInt")
+install.packages("RColorBrewer")
 
 
 # Bringing packages into library
@@ -21,6 +23,8 @@ library(maps)
 library(mapdata)
 library(sf)
 library(tmap)
+library(classInt)
+library(RColorBrewer)
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
@@ -211,27 +215,29 @@ stateID <- read_sf("/cloud/project/cb_2018_us_state_500k.shp")
 
 # Combining all data into one dataframe
 ALL_Data <- list(FINAL_2001, FINAL_2006, FINAL_2011, FINAL_2016, FINAL_2021)
+# Using rbind 
 ALL_DataFrames <- do.call("rbind", ALL_Data)
+# joining dataframes to get state ID to match up
 ID_All <- left_join(stateID, ALL_DataFrames, by=c("STUSPS"="State"))
 
 
-# Wind 2001
+# Wind 2001 - Creating dataframe for wind and omitting NAs
 WND_2001 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2001,]
 New_WND_2001 <- na.omit(WND_2001)
 
-# Wind 2006
+# Wind 2006 - Creating dataframe for wind and omitting NAs
 WND_2006 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2006,]
 New_WND_2006 <- na.omit(WND_2006)
 
-# Wind 2011
+# Wind 2011 - Creating dataframe for wind and omitting NAs
 WND_2011 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2011,]
 New_WND_2011 <- na.omit(WND_2011)
 
-# Wind 2016
+# Wind 2016 - Creating dataframe for wind and omitting NAs
 WND_2016 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2016,]
 New_WND_2016 <- na.omit(WND_2016)
 
-# Wind 2021
+# Wind 2021 - Creating dataframe for wind and omitting NAs
 WND_2021 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2021,]
 New_WND_2021 <- na.omit(WND_2021)
 
@@ -241,7 +247,7 @@ New_WND_2021 <- na.omit(WND_2021)
 # Plot 2001 Wind
 tm_shape(New_WND_2001)+
   tm_polygons("Net.Generation.MWh", palette="BuGn")+
-  tm_layout(legend.outside = TRUE)
+  tm_layout(legend.outside=TRUE)
 
 # Plot 2006 Wind
 tm_shape(New_WND_2006)+
@@ -254,9 +260,20 @@ tm_shape(New_WND_2011)+
   tm_layout(legend.outside = TRUE)
 
 # Plot 2016 Wind
+nclr_2016 <- 8 # number of bins
+min_2016 <- min(New_WND_2016$Net.Generation.MWh)
+max_2016 <- max(New_WND_2016$Net.Generation.MWh)
+breaks_2016 <- (max_2016 - min_2016) / nclr_2016
+
+plotclr <- brewer.pal(nclr_2016, "Oranges")
+class <- classIntervals(New_WND_2016$Net.Generation.MWh,
+                        nclr_2016,
+                        style = "fixed",
+                        fixedBreaks = seq(min_2016, max_2016, breaks_2016))
+
 tm_shape(New_WND_2016)+
-  tm_polygons("Net.Generation.MWh", palette="BuGn")+
-  tm_layout(legend.outside = TRUE)
+  tm_polygons("Net.Generation.MWh")+
+  tm_legend(range=c(min_2016,max_2016))
 
 # Plot 2021 Wind
 tm_shape(New_WND_2021)+
