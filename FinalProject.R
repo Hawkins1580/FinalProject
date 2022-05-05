@@ -245,40 +245,50 @@ New_WND_2021 <- na.omit(WND_2021)
 # MAKING PLOTS
 
 # Plot 2001 Wind
+
 tm_shape(New_WND_2001)+
-  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_polygons("Net.Generation.MWh",
+              n=4,style="jenks",
+              palette = "BuPu", 
+              border.col = "black", 
+              border.alpha = 1)+
   tm_layout(legend.outside=TRUE)
 
 # Plot 2006 Wind
 tm_shape(New_WND_2006)+
-  tm_polygons("Net.Generation.MWh", palette="BuGn")+
-  tm_layout(legend.outside = TRUE)
+  tm_polygons("Net.Generation.MWh",
+              n=4,style="jenks",
+              palette = "BuPu", 
+              border.col = "black", 
+              border.alpha = 1)+
+  tm_layout(legend.outside=TRUE)
 
 # Plot 2011 Wind
 tm_shape(New_WND_2011)+
-  tm_polygons("Net.Generation.MWh", palette="BuGn")+
-  tm_layout(legend.outside = TRUE)
+  tm_polygons("Net.Generation.MWh",
+              n=4,style="jenks",
+              palette = "BuPu", 
+              border.col = "black", 
+              border.alpha = 1)+
+  tm_layout(legend.outside=TRUE)
 
 # Plot 2016 Wind
-nclr_2016 <- 8 # number of bins
-min_2016 <- min(New_WND_2016$Net.Generation.MWh)
-max_2016 <- max(New_WND_2016$Net.Generation.MWh)
-breaks_2016 <- (max_2016 - min_2016) / nclr_2016
-
-plotclr <- brewer.pal(nclr_2016, "Oranges")
-class <- classIntervals(New_WND_2016$Net.Generation.MWh,
-                        nclr_2016,
-                        style = "fixed",
-                        fixedBreaks = seq(min_2016, max_2016, breaks_2016))
-
 tm_shape(New_WND_2016)+
-  tm_polygons("Net.Generation.MWh")+
-  tm_legend(range=c(min_2016,max_2016))
+  tm_polygons("Net.Generation.MWh",
+              n=4,style="jenks",
+              palette = "BuPu", 
+              border.col = "black", 
+              border.alpha = 1)+
+  tm_layout(legend.outside=TRUE)
 
 # Plot 2021 Wind
 tm_shape(New_WND_2021)+
-  tm_polygons("Net.Generation.MWh", palette="BuGn")+
-  tm_layout(legend.outside = TRUE)
+  tm_polygons("Net.Generation.MWh",
+              n=4,style="jenks",
+              palette = "BuPu", 
+              border.col = "black", 
+              border.alpha = 1)+
+  tm_layout(legend.outside=TRUE)
 
 
 
