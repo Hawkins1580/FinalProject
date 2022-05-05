@@ -7,18 +7,11 @@ install.packages("writexl")
 install.packages("maps")
 install.packages("mapdata")
 install.packages("sf")
-
-# Canit install in this version of R????
-install.packages("urbnmapr")
-install.packages("fiftystater")
-library(urbnmapr)
+install.packages("tmap")
 
 
 # Bringing packages into library
 library(usmap) 
-library(ggplot2)
-library(dplyr)
-library(lubridate)
 library(reshape2)
 library(scales)
 library(ggrepel)
@@ -27,6 +20,7 @@ library(writexl)
 library(maps)
 library(mapdata)
 library(sf)
+library(tmap)
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
@@ -213,61 +207,67 @@ FINAL_2011 <- read.csv("/cloud/project/2011.csv")
 FINAL_2016 <- read.csv("/cloud/project/2016.csv")
 FINAL_2021 <- read.csv("/cloud/project/2021.csv")
 
-FINAL_2021 %>% glimpse()
+stateID <- read_sf("/cloud/project/cb_2018_us_state_500k.shp")
+
+# Combining all data into one dataframe
+ALL_Data <- list(FINAL_2001, FINAL_2006, FINAL_2011, FINAL_2016, FINAL_2021)
+ALL_DataFrames <- do.call("rbind", ALL_Data)
+ID_All <- left_join(stateID, ALL_DataFrames, by=c("STUSPS"="State"))
 
 
-# Easy US Map
-plot_usmap() +
-  geom_point(data = FINAL_2021,
-             aes(x = Long, y = Lat, size = Net.Generation.MWh),
-             color = "red", alpha = 0.25)+
-  labs(title = "Electricity Generation",
-       subtitle = "by Renewable Energy Source",
-       size = "MWh") +
-  theme(legend.position = "right")
+# Wind 2001
+WND_2001 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2001,]
+New_WND_2001 <- na.omit(WND_2001)
+
+# Wind 2006
+WND_2006 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2006,]
+New_WND_2006 <- na.omit(WND_2006)
+
+# Wind 2011
+WND_2011 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2011,]
+New_WND_2011 <- na.omit(WND_2011)
+
+# Wind 2016
+WND_2016 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2016,]
+New_WND_2016 <- na.omit(WND_2016)
+
+# Wind 2021
+WND_2021 <- ID_All[ID_All$AER.Fuel.Type.Code=="WND" & ID_All$Year==2021,]
+New_WND_2021 <- na.omit(WND_2021)
+
+
+# MAKING PLOTS
+
+# Plot 2001 Wind
+tm_shape(New_WND_2001)+
+  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_layout(legend.outside = TRUE)
+
+# Plot 2006 Wind
+tm_shape(New_WND_2006)+
+  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_layout(legend.outside = TRUE)
+
+# Plot 2011 Wind
+tm_shape(New_WND_2011)+
+  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_layout(legend.outside = TRUE)
+
+# Plot 2016 Wind
+tm_shape(New_WND_2016)+
+  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_layout(legend.outside = TRUE)
+
+# Plot 2021 Wind
+tm_shape(New_WND_2021)+
+  tm_polygons("Net.Generation.MWh", palette="BuGn")+
+  tm_layout(legend.outside = TRUE)
 
 
 
 
-# MWh but no map border
-ggplot() + geom_point(data=FINAL_2021, aes(x=Long, y=Lat, size = Net.Generation.MWh)) +
-  scale_size(name="", range = c(1, 8)) +
-  guides(size=guide_legend("Renewable Generation")) +
-  theme_void()
-
-
-
-
-
-
-states <- st_as_sf(maps::map(database = "state",plot=F,fill=T)) 
-
-states %>%
-  ggplot()+
-  geom_sf()
-
-
-map_plot_2021 <- ggplot()+
-  geom_sf(data=states,
-          fill="white")+
-  geom_point(data=FINAL_2021,
-             mapping=aes(x=Long,
-                         y=Lat,
-                         group=AER.Fuel.Type.Code,
-                         size=Net.Generation.MWh),
-             fill="red",
-             alpha=0.3,
-             shape=21)+
-  scale_size_continuous(breaks = c(3000000,
-                                   6000000,
-                                   9000000,
-                                   12000000,
-                                   15000000),
-                        name="Net Generation (MWh)",
-                        range = c(.75, 8))
-map_plot_2021 
-
-
+# Figure #3
+CO_Resources <- read.csv("/cloud/project/CO_Resources.csv")
 
 
 
