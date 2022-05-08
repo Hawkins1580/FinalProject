@@ -8,6 +8,7 @@ install.packages("maps")
 install.packages("mapdata")
 install.packages("sf")
 install.packages("tmap")
+install.packages("systemfonts")
 
 
 # Bringing packages into library
@@ -21,13 +22,14 @@ library(maps)
 library(mapdata)
 library(sf)
 library(tmap)
+library(systemfonts)
 
 
 # Reading in U.S. Sources of Electricity (all in TWh)
 US_Sources <- read.csv("/cloud/project/Sources_FinalDataset.csv")
 
 
-# Renaming column
+# Renaming columns
 colnames(US_Sources)
 colnames(US_Sources)[1] <- "Year"
 colnames(US_Sources)[2] <- "Hydro"
@@ -65,7 +67,8 @@ ElectrictyMix_GRAPH +
                    aes(label = variable),
                    nudge_x = .75,
                    na.rm = TRUE) + 
-  theme(legend.position = "none") 
+  theme(legend.position = "none",
+        text = element_text(family = "serif", face = "italic")) 
 
 
 
@@ -78,11 +81,8 @@ Sources_2016 <- read.csv("/cloud/project/2016_DATA.csv")
 Sources_2021 <- read.csv("/cloud/project/2021_DATA.csv")
 
 
-# Filtering through the variables I want w/AER Codes
-  # Nuclear = NUC
+# Filtering through the AER Codes to get variable I want 
   # Wind = WND
-  # Hydro = HPS & HYC
-  # Other & Biomass = ORW, OTH, WWW, GEO
 
 # 2001 - Filtering for fuel code that I want to analyze
 Filter_2001 <- Sources_2001 %>% # data frame with pipe
@@ -129,7 +129,7 @@ NetGeneration_2001 <- Filter_2001 %>%
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
 # Exporting to excel so I can add lat / long coordinates
-# ALSO MAKING SURE EVERY STAT IS LISTED - IMPORTANT FOR MAPPING
+# ALSO MAKING SURE EVERY STATE IS LISTED - IMPORTANT FOR MAPPING
 write_xlsx(NetGeneration_2001, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2001.xlsx")
 
 
@@ -138,7 +138,7 @@ NetGeneration_2006 <- Filter_2006 %>%
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
 # Exporting to excel so I can add lat / long coordinates
-# ALSO MAKING SURE EVERY STAT IS LISTED - IMPORTANT FOR MAPPING
+# ALSO MAKING SURE EVERY STATE IS LISTED - IMPORTANT FOR MAPPING
 write_xlsx(NetGeneration_2006, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2006.xlsx")
 
 
@@ -147,7 +147,7 @@ NetGeneration_2011 <- Filter_2011 %>%
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
 # Exporting to excel so I can add lat / long coordinates
-# ALSO MAKING SURE EVERY STAT IS LISTED - IMPORTANT FOR MAPPING
+# ALSO MAKING SURE EVERY STATE IS LISTED - IMPORTANT FOR MAPPING
 write_xlsx(NetGeneration_2011, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2011.xlsx")
 
 
@@ -156,7 +156,7 @@ NetGeneration_2016 <- Filter_2016 %>%
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
 # Exporting to excel so I can add lat / long coordinates
-# ALSO MAKING SURE EVERY STAT IS LISTED - IMPORTANT FOR MAPPING
+# ALSO MAKING SURE EVERY STATE IS LISTED - IMPORTANT FOR MAPPING
 write_xlsx(NetGeneration_2016, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2016.xlsx")
 
 ##### 2021 - Summing Net Generation by State and Fuel Code 
@@ -164,7 +164,7 @@ NetGeneration_2021 <- Filter_2021 %>%
   group_by(Year, State, AER.Fuel.Type.Code) %>% 
   summarise(Net.Generation.MWh = sum(Net.Generation.MWh))
 # Exporting to excel so I can add lat / long coordinates
-# ALSO MAKING SURE EVERY STAT IS LISTED - IMPORTANT FOR MAPPING
+# ALSO MAKING SURE EVERY STATE IS LISTED - IMPORTANT FOR MAPPING
 write_xlsx(NetGeneration_2021, "\\Client\\C$\\Users\\nickhawkins\\Desktop\\2021.xlsx")
 
 
@@ -175,9 +175,10 @@ FINAL_2011 <- read.csv("/cloud/project/2011.csv")
 FINAL_2016 <- read.csv("/cloud/project/2016.csv")
 FINAL_2021 <- read.csv("/cloud/project/2021.csv")
 
+# Reading in state data to match my data with state IDs
 stateID <- read_sf("/cloud/project/cb_2018_us_state_500k.shp")
 
-# Combining all data into one dataframe
+# Combining all the data into one dataframe
 ALL_Data <- list(FINAL_2001, FINAL_2006, FINAL_2011, FINAL_2016, FINAL_2021)
 # Using rbind 
 ALL_DataFrames <- do.call("rbind", ALL_Data)
@@ -222,7 +223,9 @@ tm_shape(New_WND_2001)+
   tm_borders(col="black", lwd=1)+
   tm_layout(legend.outside = TRUE, legend.outside.position = "right",
             main.title = "2001 Electricity Generation from Wind Energy", 
-            title.size = 1, main.title.position="left")
+            title.size = 1, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif")
 
 # Plot 2006 Wind
 tm_shape(New_WND_2006)+
@@ -233,7 +236,9 @@ tm_shape(New_WND_2006)+
   tm_borders(col="black", lwd=1)+
   tm_layout(legend.outside = TRUE, legend.outside.position = "right",
             main.title = "2006 Electricity Generation from Wind Energy", 
-            title.size = 1, main.title.position="left")
+            title.size = 1, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif")
 
 
 # Plot 2011 Wind
@@ -245,7 +250,9 @@ tm_shape(New_WND_2011)+
   tm_borders(col="black", lwd=1)+
   tm_layout(legend.outside = TRUE, legend.outside.position = "right",
             main.title = "2011 Electricity Generation from Wind Energy", 
-            title.size = 1, main.title.position="left")
+            title.size = 1, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif")
 
 
 # Plot 2016 Wind
@@ -257,7 +264,9 @@ tm_shape(New_WND_2016)+
   tm_borders(col="black", lwd=1)+
   tm_layout(legend.outside = TRUE, legend.outside.position = "right",
             main.title = "2016 Electricity Generation from Wind Energy", 
-            title.size = 1, main.title.position="left")
+            title.size = 1, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif")
 
 
 
@@ -280,7 +289,13 @@ tm_shape(New_WND_2021)+
   tm_borders(col="black", lwd=1)+
   tm_layout(legend.outside = TRUE, legend.outside.position = "right",
             main.title = "2021 Electricity Generation from Wind Energy", 
-            title.size = 0.5, main.title.position="left")
+            title.size = 0.5, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif") # changing done
+
+# Activate mode to make intercative map
+tmap_mode("view")
+
 
 
 
