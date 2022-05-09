@@ -293,8 +293,23 @@ tm_shape(New_WND_2021)+
             fontface = "italic",
             fontfamily = "serif") # changing done
 
-# Activate mode to make intercative map
+
+# Activate mode to make interactive map
 tmap_mode("view")
+
+tm_shape(New_WND_2021)+
+  tm_fill("MWh",
+          title="Net Gen Percentile (MWh)",
+          palette = "YlGn",
+          breaks=break_2021,
+          id="NAME", # changing ID name when mouse goes over
+          labels=c("1% - %25", "25% - 50%", "50% - 75%","75% - 99%", "> 99%"))+ # creates natural breaks
+  tm_borders(col="black", lwd=1)+
+  tm_layout(legend.outside = TRUE, legend.outside.position = "right",
+            main.title = "2021 Electricity Generation from Wind Energy", 
+            title.size = 0.5, main.title.position="left",
+            fontface = "italic",
+            fontfamily = "serif") # changing done
 
 
 
